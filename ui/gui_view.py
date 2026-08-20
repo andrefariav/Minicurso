@@ -234,6 +234,22 @@ class GUIView:
         )
         self.player_progress.pack(fill=tk.X, pady=5)
 
+        # ADIÇÃO DA BARRA DE MANA
+        self.player_mana_lbl = tk.Label(
+            player_box,
+            text="",
+            font=("Helvetica", 9, "bold"),
+            bg=settings.PANEL_BG,
+            fg="#89b4fa",
+        )
+        self.player_mana_lbl.pack(anchor="w")
+
+        self.player_mana_progress = ttk.Progressbar(
+            player_box, orient="horizontal", mode="determinate"
+        )
+        self.player_mana_progress.pack(fill=tk.X, pady=5)
+        # FIM DA ADIÇÃO
+
         self.potions_lbl = tk.Label(
             player_box,
             text="",
@@ -336,7 +352,7 @@ class GUIView:
             cursor="hand2",
             command=self._on_attack_clicked,
         )
-        self.btn_attack.grid(row=0, column=0, padx=4, pady=4)
+        self.btn_grid_item(self.btn_attack, 0, 0)
 
         self.btn_special = tk.Button(
             btn_grid,
@@ -376,6 +392,9 @@ class GUIView:
             command=self._on_heal_clicked,
         )
         self.btn_heal.grid(row=1, column=1, padx=4, pady=4)
+
+    def btn_grid_item(self, btn, row, col):
+        btn.grid(row=row, column=col, padx=4, pady=4)
 
     def _draw_arena(self, event: Optional[tk.Event] = None) -> None:
         """Desenha a arena e posiciona os sprites (Goblin agora espelhado de frente)."""
@@ -459,6 +478,12 @@ class GUIView:
 
         self.player_hp_lbl.config(text=f"Vida: {p.health} / {p.max_health} HP")
         self.player_progress["value"] = (p.health / p.max_health) * 100
+
+        # ATUALIZAÇÃO DA MANA
+        curr_mana = getattr(p, "mana", 50)
+        max_mana = getattr(p, "max_mana", 50)
+        self.player_mana_lbl.config(text=f"Mana: {curr_mana} / {max_mana} MP")
+        self.player_mana_progress["value"] = (curr_mana / max_mana) * 100
 
         self.enemy_hp_lbl.config(text=f"Vida: {e.health} / {e.max_health} HP")
         self.enemy_progress["value"] = (e.health / e.max_health) * 100
