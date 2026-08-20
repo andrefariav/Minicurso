@@ -13,7 +13,8 @@ import config.settings as settings
 class Character:
     """Classe base para todos os personagens do jogo."""
 
-    def __init__(self, name: str, max_health: int, base_damage: int, max_mana: int, mana_regen: int) -> None:
+    def __init__(self, name: str, max_health: int, base_damage: int, 
+    max_mana: int, mana_regen: int) -> None:
         """Inicializa um personagem."""
         self.name: str = name
         self.max_health: int = max_health
