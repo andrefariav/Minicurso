@@ -155,4 +155,3 @@ class Enemy(Character):
     ) -> None:
         """Inicializa o inimigo."""
         super().__init__(name, max_health, base_damage, max_mana, mana_regen)
-        
