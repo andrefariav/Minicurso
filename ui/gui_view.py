@@ -672,4 +672,3 @@ class GUIView:
     def start(self) -> None:
         """Inicia a aplicação gráfica Tkinter."""
         self.root.mainloop()
-        

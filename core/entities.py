@@ -49,7 +49,7 @@ class Character:
         regen_amount = amount if amount is not None else self.mana_regen
         actual_regen = min(self.max_mana - self.mana, max(0, regen_amount))
         self.mana += actual_regen
-        return actual_regen  
+        return actual_regen
 
     def heal(self, amount: int) -> int:
         """Restaura vida do personagem sem ultrapassar a vida máxima."""
@@ -125,10 +125,10 @@ class Player(Character):
             return 0
 
         self.consume_mana(mana_cost)
-        
+
         self.special_attack_cooldown = settings.SPECIAL_ATTACK_COOLDOWN + 1
         return settings.SPECIAL_ATTACK_DAMAGE
-        
+
     def update_cooldowns(self) -> None:
         """Decrementa os turnos de recarga das habilidades."""
         if self.special_attack_cooldown > 0:
