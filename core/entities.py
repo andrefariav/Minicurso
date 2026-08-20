@@ -13,7 +13,7 @@ import config.settings as settings
 class Character:
     """Classe base para todos os personagens do jogo."""
 
-    def __init__(self, name: str, max_health: int, base_damage: int) -> None:
+    def __init__(self, name: str, max_health: int, base_damage: int, max_mana: int, mana_regen: int) -> None:
         """Inicializa um personagem."""
         self.name: str = name
         self.max_health: int = max_health
@@ -21,6 +21,9 @@ class Character:
         self.base_damage: int = base_damage
         self.weapon: Optional[Weapon] = None
         self.is_defending: bool = False
+        self.max_mana: int = max_mana
+        self.mana: int = max_mana
+        self.mana_regen: int = mana_regen
 
     def take_damage(self, amount: int) -> int:
         """Aplica dano ao personagem considerando postura de defesa."""
@@ -32,6 +35,24 @@ class Character:
         damage_taken = min(self.health, max(0, actual_damage))
         self.health -= damage_taken
         return damage_taken
+
+    def consume_mana(self, amount: int) -> int:
+        """Gasta a mana para o ataque ou habilidade."""
+        if self.mana >= amount:
+            actual_loss = max(0, amount)
+            self.mana -= actual_loss
+            return actual_loss
+        return 0
+
+    def regenerate_mana(self, amount: Optional[int] = None) -> int:
+        """Restaura a mana do personagem por turno sem ultrapassar o limite máximo."""
+        regen_amount = amount if amount is not None else self.mana_regen
+        actual_regen = min(self.max_mana - self.mana, max(0, regen_amount))
+        self.mana += actual_regen
+        return actual_regen  
+
+
+
 
     def heal(self, amount: int) -> int:
         """Restaura vida do personagem sem ultrapassar a vida máxima."""
@@ -77,10 +98,12 @@ class Player(Character):
         name: str = "Herói",
         max_health: int = 100,
         base_damage: int = 15,
-        potions: int = 3
+        potions: int = 3,
+        max_mana: int = 50,
+        mana_regen: int = 5
     ) -> None:
         """Inicializa o jogador com poções e habilidade especial."""
-        super().__init__(name, max_health, base_damage)
+        super().__init__(name, max_health, base_damage, max_mana, mana_regen)
         self.potions_count: int = potions
         self.special_attack_cooldown: int = 0
 
@@ -93,14 +116,19 @@ class Player(Character):
         return self.heal(heal_amount)
 
     def can_use_special(self) -> bool:
-        """Verifica se a habilidade especial está fora de recarga (cooldown == 0)."""
-        return self.special_attack_cooldown == 0
+        """Verifica se a habilidade especial está fora de recarga e se há MP suficiente."""
+        mana_cost = getattr(settings, 'SPECIAL_ATTACK_MANA_COST', 20)
+        return self.special_attack_cooldown == 0 and self.mana >= mana_cost
 
     def use_special_attack(self) -> int:
-        """Executa a habilidade Golpe Devastador e ativa o tempo de recarga."""
+        """Executa a habilidade Golpe Devastador, consome MP e ativa o tempo de recarga."""
+        mana_cost = getattr(settings, 'SPECIAL_ATTACK_MANA_COST', 20)
+
         if not self.can_use_special():
             return 0
 
+        self.consume_mana(mana_cost)
+        
         self.special_attack_cooldown = settings.SPECIAL_ATTACK_COOLDOWN + 1
         return settings.SPECIAL_ATTACK_DAMAGE
 
@@ -117,7 +145,9 @@ class Enemy(Character):
         self,
         name: str = "Gargula de Pedra",
         max_health: int = 80,
-        base_damage: int = 12
+        base_damage: int = 12,
+        max_mana: int = 30,
+        mana_regen: int = 3
     ) -> None:
         """Inicializa o inimigo."""
-        super().__init__(name, max_health, base_damage)
+        super().__init__(name, max_health, base_damage, max_mana, mana_regen)
