@@ -16,6 +16,8 @@ ENEMY_SPRITE_PATH: str = os.path.join(ASSETS_DIR, "enemy.ppm")
 PLAYER_MAX_HEALTH: int = 100
 PLAYER_BASE_DAMAGE: int = 15
 PLAYER_INITIAL_POTIONS: int = 3
+PLAYER_MAX_MANA: int = 100
+PLAYER_MANA_REGEN: int = 1
 
 # Configurações de Combate Avançado (Tasks 02, 03, 04)
 CRITICAL_HIT_CHANCE: float = 0.20
